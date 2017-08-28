@@ -208,12 +208,6 @@ def find_lanes(binary_warped, frame_id):
 
   save_image(out_img, 'lanes', frame_id)
 
-  # plt.imshow(out_img)
-  # plt.plot(left_fitx, ploty, color='yellow')
-  # plt.plot(right_fitx, ploty, color='yellow')
-  # plt.xlim(0, 1280)
-  # plt.ylim(720, 0)
-
   return ploty, left_fitx, right_fitx, left_fit, right_fit
 
 
@@ -254,16 +248,11 @@ def find_lines_from_known_lines(binary_warped, left_fit, right_fit, frame_id):
 
   return ploty, left_fitx, right_fitx, left_fit, right_fit
 
+
 def measure_curvature(leftx, rightx):
   # Generate some fake data to represent lane-line pixels
   ploty = np.linspace(0, 719, num=720)  # to cover same y-range as image
   quadratic_coeff = 3e-4  # arbitrary quadratic coefficient
-  # For each y position generate random x position within +/-50 pix
-  # of the line base position in each case (x=200 for left, and x=900 for right)
-  # leftx = np.array([200 + (y ** 2) * quadratic_coeff + np.random.randint(-50, high=51)
-  #                   for y in ploty])
-  # rightx = np.array([900 + (y ** 2) * quadratic_coeff + np.random.randint(-50, high=51)
-  #                    for y in ploty])
 
   leftx = leftx[::-1]  # Reverse to match top-to-bottom in y
   rightx = rightx[::-1]  # Reverse to match top-to-bottom in y
@@ -274,24 +263,12 @@ def measure_curvature(leftx, rightx):
   right_fit = np.polyfit(ploty, rightx, 2)
   right_fitx = right_fit[0] * ploty ** 2 + right_fit[1] * ploty + right_fit[2]
 
-  # Plot up the fake data
-  # mark_size = 3
-  # plt.plot(leftx, ploty, 'o', color='red', markersize=mark_size)
-  # plt.plot(rightx, ploty, 'o', color='blue', markersize=mark_size)
-  # plt.xlim(0, 1280)
-  # plt.ylim(0, 720)
-  # plt.plot(left_fitx, ploty, color='green', linewidth=3)
-  # plt.plot(right_fitx, ploty, color='green', linewidth=3)
-  # plt.gca().invert_yaxis()  # to visualize as we do the images
-
   y_eval = np.max(ploty)
   left_curverad = ((1 + (2 * left_fit[0] * y_eval + left_fit[1]) ** 2) ** 1.5) / np.absolute(2 * left_fit[0])
   right_curverad = ((1 + (2 * right_fit[0] * y_eval + right_fit[1]) ** 2) ** 1.5) / np.absolute(2 * right_fit[0])
-  # print(left_curverad, right_curverad)
 
   left_min_y = left_fit[2] + y_eval * left_fit[1] + y_eval * left_fit[0] ** 2
   right_min_y = right_fit[2] + y_eval * right_fit[1] + y_eval * right_fit[0] ** 2
-  # print ('left min y = {}, right min y = {}'.format(left_min_y, right_min_y))
 
   ym_per_pix = 30.0 / 720  # meters per pixel in y dimension
   xm_per_pix = 3.7 / 700  # meters per pixel in x dimension
@@ -305,11 +282,9 @@ def measure_curvature(leftx, rightx):
   right_curverad = ((1 + (2 * right_fit_cr[0] * y_eval * ym_per_pix + right_fit_cr[1]) ** 2) ** 1.5) / np.absolute(
     2 * right_fit_cr[0])
   # Now our radius of curvature is in meters
-  # print(left_curverad, 'm', right_curverad, 'm')
   left_min_y_m = left_min_y * xm_per_pix
   right_min_y_m = right_min_y * xm_per_pix
   pos_to_center = ((left_min_y_m + right_min_y_m) / 2.0) - (1280 * xm_per_pix / 2.0)
-  # print ('left min y = {}(m), right min y = {}(m), pos_to_center = {}'.format(left_min_y_m, right_min_y_m, pos_to_center))
 
   return left_curverad, right_curverad, pos_to_center
 
@@ -354,7 +329,7 @@ def add_text(image, avg_curvature, pos_to_center, frame_id):
   cv2.putText(image, 'Frame id: {}'.format(frame_id), (10, 150), font, 1.5, (255, 255, 255), 2, cv2.LINE_AA)
   return image
 
-save_images = True
+save_images = False
 def save_image(img, filename, frame_id):
   if not save_images:
     return
@@ -404,21 +379,10 @@ def perform_camera_calibration():
 
     # If found, draw corners
     if ret == True:
-        # Draw and display the corners
-        # if imgpoints.shape == (0, 0):
-        #   imgpoints = np.array(np.array(corners))
-        #   objpoints = np.array(np.array(single_objpoints))
-        # else:
-        #   np.concatenate((imgpoints, np.array(corners)))
-        #   np.concatenate((objpoints, np.array(single_objpoints)))
         corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
         imgpoints.append(corners2)
         objpoints.append(single_objpoints)
 
-        # cv2.drawChessboardCorners(img, (nx, ny), corners, ret)
-        # cv2.imwrite("./output_images/" + filename, img)
-
-  # print("objpoints={}".format(np.array(objpoints)))
   calib_image = mpimg.imread('./camera_cal/calibration1.jpg')
   ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(np.array(objpoints), np.array(imgpoints), img_shape, None, None)
   undistorted = cv2.undistort(calib_image, mtx, dist, None, mtx)
@@ -429,8 +393,12 @@ def perform_camera_calibration():
 def main():
   mtx, dist = perform_camera_calibration()
 
-  test_image = mpimg.imread('./test_images/test6.jpg')
+  test_image = cv2.imread('./test_images/straight_lines1.jpg')
   hls_binary = hls_select(test_image, 0, s_thresh=(0, 1))
+
+  src = np.float32([[250, 688], [585, 459], [701, 459], [1053, 688]])
+  dst = np.float32([[200, 720], [200, 0], [1000, 0], [1000, 720]])
+  warped = warper(test_image, src, dst)
 
 
   input_folder = './test_images/'
@@ -445,10 +413,8 @@ def main():
   cap = cv2.VideoCapture(video_folder + 'project_video.mp4')
   i = 0
 
-  start_debug = 900
-  end_debug = 1064
-  # start_debug = 0
-  # end_debug = 1000000
+  start_debug = 0
+  end_debug = 1000000
   while(cap.isOpened()):
       ret, straight_lines_image = cap.read()
       if straight_lines_image is None:
@@ -456,14 +422,11 @@ def main():
       i += 1
       if i < start_debug or i > end_debug:
         continue
-      # print("image {}".format(i))
-  # for filename in os.listdir(input_folder):
-  #   if filename.endswith(".png") or filename.endswith(".jpg") or \
-  #     filename.endswith(".jpeg") or filename.endswith(".pgm"):
-      # straight_lines_image = mpimg.imread(input_folder + filename)
 
       undistorted = cv2.undistort(straight_lines_image, mtx, dist, None, mtx)
       save_image(undistorted, 'undistorted', i)
+
+
       hls_binary = hls_select(undistorted, i, s_thresh=(90, 250), l_thresh=(200, 255))
       save_image(hls_binary.copy()*255, 'hls_binary', i)
 
@@ -471,16 +434,11 @@ def main():
       hls_binary = cv2.bitwise_or(hls_binary, sobel)
       # display_images(straight_lines_image, hls_binary, 'Warped and binarized', 'gray')
 
-      src = np.float32([[250, 688], [590, 459], [703, 459], [1053, 688]])
+      src = np.float32([[250, 688], [585, 459], [701, 459], [1053, 688]])
       dst = np.float32([[200, 720], [200, 0], [1000, 0], [1000, 720]])
       top_down = warper(hls_binary, src, dst)
+
       save_image(top_down.copy()*255, 'top_down', i)
-
-      # display_images(straight_lines_image, undistorted, 'Undistorted')
-      # display_images(straight_lines_image, top_down, 'Undistorted and Warped Image', 'gray')
-
-      # histogram = np.sum(top_down[img.shape[0]//2:,:], axis=0)
-      # plt.plot(histogram)
 
       if line_state.detected:
         best_fit = line_state.get_best_fit()
