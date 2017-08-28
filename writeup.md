@@ -20,9 +20,11 @@ The goals / steps of this project are the following:
 [image5]: ./output_images/H_channel_1047.png "H Channel"
 [image6]: ./output_images/L_channel_1047.png "L Channel"
 [image7]: ./output_images/hls_binary_1047.png "Shadow Removed"
-
 [image8]: ./output_images/original_unwarped.jpg "Original Unwarped"
 [image9]: ./output_images/warped.jpg "Warped"
+[image10]: ./output_images/histogram.png "Histogram"
+[image11]: ./output_images/lanes_900.png "Sliding Windows"
+[image12]: ./output_images/fit.png "Second Order Polynomial Fit"
 
 [image5]: ./output_images/warped_straight_lines.jpg "Warp Example"
 [image6]: ./output_images/color_fit_lines.jpg "Fit Visual"
@@ -108,13 +110,33 @@ Warped Results with Destination Points Drawn
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+The lanes are first found from using the binarized image histogram projected on the x-axis, which gives us a good starting point to start looking for the lane lines from the bottom of the image. This step is performed in find_lines.py, finde_lines() function, lines XXX through XXX. The 2 highest peak of this histogram should be where the lanes are, here is an example of this histogram:
 
-![alt text][image5]
+Binarized Images X-Axis Projection
+![alt text][image10]
+
+Following this first detection with the histogram, sliding windows along the Y-Axis are used to continue to detect the left and right lane lines. An example of the sliding windows is shown here:
+![alt text][image11]
+
+However, when lane lines were already found, we do not need to perform all the previous steps, but we can use this as a hint to "look" nearby and try to find the current lines. This is done in function find_lines_from_known_lines() in find_lines.py, lines XXX throught XXX. If finding lines from known lane lines does not work, a full lane lines detection with histogram and sliding windows (find_lines() again) is performed.
+
+Following this step, function measure_curvature() in lines XXX through XXX in file `find_lines.py` fits a second order polynomial of the form x = A * y^2 + B * y + C on either lane lines. Here is an example of such a fit (including sliding windows):
+![alt text][image12]
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+I did this in the same function as the polynomial fit, which was measure_curvature() in lines XXX through XXX in file `find_lines.py`. The radius of curvature is first found in pixel and given by the following equation:
+R
+​curve
+​​ =
+​∣2A∣
+​
+​(1+(2Ay+B)
+​2
+​​ )
+​3/2
+​​ 
+​​
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
