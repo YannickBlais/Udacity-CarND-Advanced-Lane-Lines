@@ -25,6 +25,7 @@ The goals / steps of this project are the following:
 [image10]: ./output_images/histogram.png "Histogram"
 [image11]: ./output_images/lanes_900.png "Sliding Windows"
 [image12]: ./output_images/fit.png "Second Order Polynomial Fit"
+[image13]: ./output_images/result_934.png "Final Result on a Random Image"
 
 [image5]: ./output_images/warped_straight_lines.jpg "Warp Example"
 [image6]: ./output_images/color_fit_lines.jpg "Fit Visual"
@@ -125,27 +126,15 @@ Following this step, function measure_curvature() in lines XXX through XXX in fi
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in the same function as the polynomial fit, which was measure_curvature() in lines XXX through XXX in file `find_lines.py`. The radius of curvature is first found in pixel and given by the following equation:
-R
-​curve
-​​ =
-​∣2A∣
-​
-​(1+(2Ay+B)
-​2
-​​ )
-​3/2
-​​ 
-​​
+I did this in the same function as the polynomial fit, which was measure_curvature() in lines XXX through XXX in file `find_lines.py`. The polynomial is first converted to world space using the pixel to meter ratio. Those ratios were approximated using the US standard 3.7 meters width per lane and the 720 pixels high were about 30 meters. The radius of curvature is then given by the following equation: R =(1+(2Ay+B)^2)^(3/2)) / ∣2A∣, where 'A' and 'B' are the polynomial fit coefficients.
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+I implemented this step in the main(), lines XXX through XXX in my code in `find_lines.py`. Here is an example of my result on an image from the "project_video.mp4" which displays radius of curvature, position from center of lane and frame id:
 
-![alt text][image6]
+![alt text][image13]
 
 ---
-
 ### Pipeline (video)
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
