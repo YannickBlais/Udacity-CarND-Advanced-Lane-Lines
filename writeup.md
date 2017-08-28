@@ -16,7 +16,10 @@ The goals / steps of this project are the following:
 [image1]: ./camera_cal/calibration1.jpg "Original Image"
 [image2]: ./output_images/undistort_output.png "Undistorted"
 [image3]: ./test_images/test1.jpg "Road Transformed"
-[image4]: ./output_images/binary_combo_example.jpg "Binary Example"
+[image4]: ./output_images/hls_binary_941.png "Binary Example"
+[image5]: ./output_images/H_channel_1047.png "H Channel"
+[image6]: ./output_images/L_channel_1047.png "L Channel"
+
 [image5]: ./output_images/warped_straight_lines.jpg "Warp Example"
 [image6]: ./output_images/color_fit_lines.jpg "Fit Visual"
 [image7]: ./output_images/example_output.jpg "Output"
@@ -54,13 +57,20 @@ Undistorted Image
 #### 1. Provide an example of a distortion-corrected image.
 
 To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
-![alt text][image2]
+![alt text][image3]
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+I used a combination of color and gradient thresholds to generate a binary image. Color thresholding steps at function hls_select(), lines XXX through XXX in `find_lines.py` and gradient threshold steps are at function abs_sobel_thresh(), lines XXX through XXX in `find_lines.py`.  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
 
-![alt text][image3]
+![alt text][image4]
+
+The color thresholding transform the image into HLS components and specific thresholds are used for each channel. I used the S channel that is good most of the time at finding both yellow and white lines, the L channel (which is similar to grayscale) with a simple theshold very good at finding the white lines. I also used the H channel to detect shadows on the road. This was rather useful in an area where trees were causing shadow on the road and confusing S channel line detection. Here's an example of H ans L channels for comparison:
+
+H Channel
+![alt text][image5]
+L Channel
+![alt text][image6]
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
