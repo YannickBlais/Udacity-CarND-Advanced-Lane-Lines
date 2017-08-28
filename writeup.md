@@ -20,14 +20,14 @@ The goals / steps of this project are the following:
 [image5]: ./output_images/H_channel_1047.png "H Channel"
 [image6]: ./output_images/L_channel_1047.png "L Channel"
 [image7]: ./output_images/hls_binary_1047.png "Shadow Removed"
-
 [image8]: ./output_images/original_unwarped.jpg "Original Unwarped"
 [image9]: ./output_images/warped.jpg "Warped"
+[image10]: ./output_images/histogram.png "Histogram"
+[image11]: ./output_images/lanes_900.png "Sliding Windows"
+[image12]: ./output_images/fit.png "Second Order Polynomial Fit"
+[image13]: ./output_images/result_934.png "Final Result on a Random Image"
 
-[image5]: ./output_images/warped_straight_lines.jpg "Warp Example"
-[image6]: ./output_images/color_fit_lines.jpg "Fit Visual"
-[image7]: ./output_images/example_output.jpg "Output"
-[video1]: ./project_video.mp4 "Video"
+[video1]: ./output_project_video.mp4 "Video"
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 
@@ -108,27 +108,35 @@ Warped Results with Destination Points Drawn
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+The lanes are first found from using the binarized image histogram projected on the x-axis, which gives us a good starting point to start looking for the lane lines from the bottom of the image. This step is performed in find_lines.py, finde_lines() function, lines XXX through XXX. The 2 highest peak of this histogram should be where the lanes are, here is an example of this histogram:
 
-![alt text][image5]
+Binarized Images X-Axis Projection
+![alt text][image10]
+
+Following this first detection with the histogram, sliding windows along the Y-Axis are used to continue to detect the left and right lane lines. An example of the sliding windows is shown here:
+![alt text][image11]
+
+However, when lane lines were already found, we do not need to perform all the previous steps, but we can use this as a hint to "look" nearby and try to find the current lines. This is done in function find_lines_from_known_lines() in find_lines.py, lines XXX throught XXX. If finding lines from known lane lines does not work, a full lane lines detection with histogram and sliding windows (find_lines() again) is performed.
+
+Following this step, function measure_curvature() in lines XXX through XXX in file `find_lines.py` fits a second order polynomial of the form x = A * y^2 + B * y + C on either lane lines. Here is an example of such a fit (including sliding windows):
+![alt text][image12]
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+I did this in the same function as the polynomial fit, which was measure_curvature() in lines XXX through XXX in file `find_lines.py`. The polynomial is first converted to world space using the pixel to meter ratio. Those ratios were approximated using the US standard 3.7 meters width per lane and the 720 pixels high were about 30 meters. The radius of curvature is then given by the following equation: R =(1+(2Ay+B)^2)^(3/2)) / ∣2A∣, where 'A' and 'B' are the polynomial fit coefficients.
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+I implemented this step in the main(), lines XXX through XXX in my code in `find_lines.py`. Here is an example of my result on an image from the "project_video.mp4" which displays radius of curvature, position from center of lane and frame id:
 
-![alt text][image6]
+![alt text][image13]
 
 ---
-
 ### Pipeline (video)
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](./output_project_video.mp4)
 
 ---
 
