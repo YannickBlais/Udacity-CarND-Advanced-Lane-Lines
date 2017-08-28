@@ -47,7 +47,7 @@ I then used the output `objpoints` and `imgpoints` to compute the camera calibra
 Original Image
 ![alt text][image1]
 Undistorted Image
-![alt text][image1]
+![alt text][image2]
 
 ### Pipeline (single images)
 
