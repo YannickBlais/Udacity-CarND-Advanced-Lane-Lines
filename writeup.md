@@ -19,7 +19,10 @@ The goals / steps of this project are the following:
 [image4]: ./output_images/hls_binary_941.png "Binary Example"
 [image5]: ./output_images/H_channel_1047.png "H Channel"
 [image6]: ./output_images/L_channel_1047.png "L Channel"
-[image6]: ./output_images/hls_binary_1047.png "Shadow Removed"
+[image7]: ./output_images/hls_binary_1047.png "Shadow Removed"
+
+[image8]: ./output_images/original_unwarped.jpg "Original Unwarped"
+[image9]: ./output_images/warped.jpg "Warped"
 
 [image5]: ./output_images/warped_straight_lines.jpg "Warp Example"
 [image6]: ./output_images/color_fit_lines.jpg "Fit Visual"
@@ -98,7 +101,10 @@ Which can be beter visualized in the following source and destination points:
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
-![alt text][image4]
+Undistorted Image with Source Points Drawn
+![alt text][image8]
+Warped Results with Destination Points Drawn
+![alt text][image9]
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
