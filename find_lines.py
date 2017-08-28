@@ -104,7 +104,7 @@ def warper(img, src, dst):
   return warped
 
 
-def hls_select(img, frame_id, s_thresh=(0, 255), l_thresh=(0, 255)):
+def hls_select(img, frame_id, s_thresh=(0, 255), l_thresh=(0, 255), h_thresh=15):
   # 1) Convert to HLS color space
   hls = cv2.cvtColor(img, cv2.COLOR_RGB2HLS)
   H = hls[:, :, 0]
@@ -115,8 +115,7 @@ def hls_select(img, frame_id, s_thresh=(0, 255), l_thresh=(0, 255)):
   binary[(S > s_thresh[0]) & (S <= s_thresh[1])] = 1
   binary[(L > l_thresh[0]) & (L <= l_thresh[1])] = 1
 
-  h_binary = np.zeros_like(H)
-  binary[(H < 15)] = 0
+  binary[(H < h_thresh)] = 0
   # 3) Return a binary image of threshold result
 
   save_image(np.array(L), 'L_channel', frame_id)
@@ -355,7 +354,7 @@ def add_text(image, avg_curvature, pos_to_center, frame_id):
   cv2.putText(image, 'Frame id: {}'.format(frame_id), (10, 150), font, 1.5, (255, 255, 255), 2, cv2.LINE_AA)
   return image
 
-save_images = False
+save_images = True
 def save_image(img, filename, frame_id):
   if not save_images:
     return
@@ -416,8 +415,8 @@ def perform_camera_calibration():
         imgpoints.append(corners2)
         objpoints.append(single_objpoints)
 
-        cv2.drawChessboardCorners(img, (nx, ny), corners, ret)
-        cv2.imwrite("./output_images/" + filename, img)
+        # cv2.drawChessboardCorners(img, (nx, ny), corners, ret)
+        # cv2.imwrite("./output_images/" + filename, img)
 
   # print("objpoints={}".format(np.array(objpoints)))
   calib_image = mpimg.imread('./camera_cal/calibration1.jpg')
@@ -446,10 +445,10 @@ def main():
   cap = cv2.VideoCapture(video_folder + 'project_video.mp4')
   i = 0
 
-  # start_debug = 900
-  # end_debug = 1064
-  start_debug = 0
-  end_debug = 1000000
+  start_debug = 900
+  end_debug = 1064
+  # start_debug = 0
+  # end_debug = 1000000
   while(cap.isOpened()):
       ret, straight_lines_image = cap.read()
       if straight_lines_image is None:
