@@ -125,6 +125,8 @@ Following this step, function measure_curvature() in lines XXX through XXX in fi
 
 I did this in the same function as the polynomial fit, which was measure_curvature() in lines XXX through XXX in file `find_lines.py`. The polynomial is first converted to world space using the pixel to meter ratio. Those ratios were approximated using the US standard 3.7 meters width per lane and the 720 pixels high were about 30 meters. The radius of curvature is then given by the following equation: R =(1+(2Ay+B)^2)^(3/2)) / ∣2A∣, where 'A' and 'B' are the polynomial fit coefficients.
 
+Ultimately, the vehicle position to the center of the lane, the radius of curvature and the left and right fits are stored in a class "Line" (see find_lines.py, lines XXX throught XXX) that keeps track of those measurement and is reinitialized when finding lines from known lines fails, i.e. the current fit is too far from previous fit. All the mentioned metrics are averaged over at most maximum the last 10 measurements.
+
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
 I implemented this step in the main(), lines XXX through XXX in my code in `find_lines.py`. Here is an example of my result on an image from the "project_video.mp4" which displays radius of curvature, position from center of lane and frame id (Not that I display [Inf] when the radius is large in a straight line as the values are a bit meaningless at that point):
