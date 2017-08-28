@@ -127,7 +127,7 @@ I did this in the same function as the polynomial fit, which was measure_curvatu
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in the main(), lines XXX through XXX in my code in `find_lines.py`. Here is an example of my result on an image from the "project_video.mp4" which displays radius of curvature, position from center of lane and frame id:
+I implemented this step in the main(), lines XXX through XXX in my code in `find_lines.py`. Here is an example of my result on an image from the "project_video.mp4" which displays radius of curvature, position from center of lane and frame id (Not that I display [Inf] when the radius is large in a straight line as the values are a bit meaningless at that point):
 
 ![alt text][image13]
 
@@ -144,4 +144,12 @@ Here's a [link to my video result](./output_project_video.mp4)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.
+
+First, the camera calibration: I did not encounter major issues during this step as images were as expected, the only exception is the first image that did not display all the corners and was rejected for calibration. It was a good image to verify that calibration worked well however.
+
+Second, binarization step: as discussed previously in this document, removing low-value pixels from the H-Channel may not be usable in all conditions. Maybe simply using adaptative histogram equalization (e.g. OpenCV's CLAHE) could help in some way to remove the effects from shadows.
+
+Third, image unwarping: This step is also simple and straightforward and I did not encounter major issues.
+
+Fourth, Polynomial fit: This step could benefit from a robust stochastic fit approach such as the Least Median of Square or RANSAC. This fit is particularly vulnerable to outliers.
