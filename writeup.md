@@ -27,10 +27,7 @@ The goals / steps of this project are the following:
 [image12]: ./output_images/fit.png "Second Order Polynomial Fit"
 [image13]: ./output_images/result_934.png "Final Result on a Random Image"
 
-[image5]: ./output_images/warped_straight_lines.jpg "Warp Example"
-[image6]: ./output_images/color_fit_lines.jpg "Fit Visual"
-[image7]: ./output_images/example_output.jpg "Output"
-[video1]: ./project_video.mp4 "Video"
+[video1]: ./output_project_video.mp4 "Video"
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 
@@ -139,7 +136,7 @@ I implemented this step in the main(), lines XXX through XXX in my code in `find
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](./output_project_video.mp4)
 
 ---
 
