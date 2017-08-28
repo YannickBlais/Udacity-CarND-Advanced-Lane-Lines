@@ -69,14 +69,14 @@ I used a combination of color and gradient thresholds to generate a binary image
 
 ![alt text][image4]
 
-The color thresholding transform the image into HLS components and specific thresholds are used for each channel. I used the S channel that is good most of the time at finding both yellow and white lines, the L channel (which is similar to grayscale) with a simple theshold very good at finding the white lines. I also used the H channel to detect shadows on the road. This was rather useful in an area where trees were causing shadow on the road and confusing S channel line detection. Here's an example of H ans L channels for comparison:
+The color thresholding transforms the original image into HLS components and specific thresholds are applied on each channel. I used the S channel that is good most of the time at finding both yellow and white lines, the L channel (which is similar to grayscale) with a simple theshold that is very good at finding the white lines. I also used the H channel to detect shadows on the road. This was rather useful in an area where trees were causing shadow on the road and confusing S channel line detection. Here's an example of H ans L channels for comparison:
 
 H Channel
 ![alt text][image5]
 L Channel
 ![alt text][image6]
 
-Therefore I used the H Channel to subtract the shadow from the image and the final result looks like this:
+Therefore I used the H Channel to "subtract" the shadow from the image and the final result looks like this:
 Shadow Removed
 ![alt text][image7]
 Note that the H channel was good at picking up shadows and sudden changes in lighting in this particular case, but may not be viable with all case scenarios, more testing should be done.
@@ -108,7 +108,7 @@ Warped Results with Destination Points Drawn
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-The lanes are first found from using the binarized image histogram projected on the x-axis, which gives us a good starting point to start looking for the lane lines from the bottom of the image. This step is performed in find_lines.py, find_lanes() function, lines 127 through 211. The 2 highest peak of this histogram should be where the lanes are, here is an example of this histogram:
+The lanes are first found using the binarized image histogram projected on the X-Axis, which gives us a good starting point to start looking for the lane lines from the bottom of the image. This step is performed in find_lines.py, find_lanes() function, lines 127 through 211. The 2 highest peak of this histogram should be where the lanes start, here is an example of this histogram:
 
 Binarized Images X-Axis Projection
 ![alt text][image10]
@@ -118,18 +118,18 @@ Following this first detection with the histogram, sliding windows along the Y-A
 
 However, when lane lines were already found, we do not need to perform all the previous steps, but we can use this as a hint to "look" nearby and try to find the current lines. This is done in function find_lines_from_known_lines() in find_lines.py, lines 214 throught 249. If finding lines from known lane lines does not work, a full lane lines detection with histogram and sliding windows (find_lines() again) is performed.
 
-Following this step, function measure_curvature() in lines 252 through 289 in file `find_lines.py` fits a second order polynomial of the form x = A * y^2 + B * y + C on either lane lines. Here is an example of such a fit (including sliding windows):
+Following this step, function measure_curvature() in lines 252 through 289 in file `find_lines.py` fits a second order polynomial of the form x = A * y^2 + B * y + C on both lane lines. Here is an example of such a fit (including sliding windows):
 ![alt text][image12]
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in the same function as the polynomial fit, which was measure_curvature() in lines 277 through 289 in file `find_lines.py`. The polynomial is first converted to world space using the pixel to meter ratio. Those ratios were approximated using the US standard 3.7 meters width per lane and the 720 pixels high were about 30 meters. The radius of curvature is then given by the following equation: R =(1+(2Ay+B)^2)^(3/2)) / ∣2A∣, where 'A' and 'B' are the polynomial fit coefficients.
+I did this in the same function as the polynomial fit, which was measure_curvature() in lines 277 through 289 in file `find_lines.py`. The polynomial is first converted to world space using the pixel to meter ratio. Those ratios were approximated using the US standard 3.7 meters lane width and for the height I found that 720 pixels were about 30 meters. The radius of curvature is then given by the following equation: R =(1+(2Ay+B)^2)^(3/2)) / ∣2A∣, where 'A' and 'B' are the polynomial fit coefficients.
 
-Ultimately, the vehicle position to the center of the lane, the radius of curvature and the left and right fits are stored in a class "Line" (see find_lines.py, lines 19 through 83) that keeps track of those measurement and is reinitialized when finding lines from known lines fails, i.e. the current fit is too far from previous fit. All the mentioned metrics are averaged over at most maximum the last 10 measurements.
+Ultimately, the vehicle position to the center of the lane, the radius of curvature and the left and right fits are stored in a class "Line" (see find_lines.py, lines 19 through 83) that keeps track of those measurement and is reinitialized when finding lines from known lines fails, i.e. the current fit is too far from previous fit. All the above-mentioned metrics are averaged over at most maximum the last 10 measurements.
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in the main(), lines 478 through 484 (including unwarp_and_project_lines() function) in my code in `find_lines.py`. Here is an example of my result on an image from the "project_video.mp4" which displays radius of curvature, position from center of lane and frame id (Not that I display [Inf] when the radius is large in a straight line as the values are a bit meaningless at that point):
+I implemented this step in the main() function, lines 478 through 484 (including unwarp_and_project_lines() function) in my code in `find_lines.py`. Here is an example of my result on an image from the "project_video.mp4" which displays radius of curvature, position from center of lane and frame id (Not that I display [Inf] when the radius is large in a straight lanes as the values are varying a lot and a bit meaningless at that point):
 
 ![alt text][image13]
 
