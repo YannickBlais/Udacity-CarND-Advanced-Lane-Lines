@@ -19,6 +19,7 @@ The goals / steps of this project are the following:
 [image4]: ./output_images/hls_binary_941.png "Binary Example"
 [image5]: ./output_images/H_channel_1047.png "H Channel"
 [image6]: ./output_images/L_channel_1047.png "L Channel"
+[image6]: ./output_images/hls_binary_1047.png "Shadow Removed"
 
 [image5]: ./output_images/warped_straight_lines.jpg "Warp Example"
 [image6]: ./output_images/color_fit_lines.jpg "Fit Visual"
@@ -61,7 +62,7 @@ To demonstrate this step, I will describe how I apply the distortion correction 
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient thresholds to generate a binary image. Color thresholding steps at function hls_select(), lines XXX through XXX in `find_lines.py` and gradient threshold steps are at function abs_sobel_thresh(), lines XXX through XXX in `find_lines.py`.  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+I used a combination of color and gradient thresholds to generate a binary image. Color thresholding steps at function hls_select(), lines XXX through XXX in `find_lines.py` and gradient threshold steps are at function abs_sobel_thresh(), lines XXX through XXX in `find_lines.py`. I perform a final bitwise 'or' between the 2 binary results to merge them together. Here's an example of my output for this step.
 
 ![alt text][image4]
 
@@ -72,24 +73,21 @@ H Channel
 L Channel
 ![alt text][image6]
 
+Therefore I used the H Channel to subtract the shadow from the image and the final result looks like this:
+Shadow Removed
+![alt text][image7]
+Note that the H channel was good at picking up shadows and sudden changes in lighting in this particular case, but may not be viable with all case scenarios, more testing should be done.
+
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
+The code for my perspective transform includes a function called `warper()`, which appears in lines XXX through XXX in the file `find_lines.py`.  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
 
 ```python
-src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
-dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
+      src = np.float32([[250, 688], [590, 459], [703, 459], [1053, 688]])
+      dst = np.float32([[200, 720], [200, 0], [1000, 0], [1000, 720]])
 ```
 
-This resulted in the following source and destination points:
+Which can be beter visualized in the following source and destination points:
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
