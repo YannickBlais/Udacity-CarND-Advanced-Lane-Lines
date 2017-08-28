@@ -386,7 +386,8 @@ def abs_sobel_thresh(img, frame_id, orient='x', thresh_min=0, thresh_max=255):
   # 6) Return this mask as your binary_output image
   return binary_output
 
-def main():
+
+def perform_camera_calibration():
   single_objpoints = np.zeros((nx * ny, 3), np.float32)
   single_objpoints[:, :2] = np.mgrid[0:nx, 0:ny].T.reshape(-1, 2)
   objpoints = []
@@ -415,14 +416,19 @@ def main():
         imgpoints.append(corners2)
         objpoints.append(single_objpoints)
 
-        # cv2.drawChessboardCorners(img, (nx, ny), corners, ret)
-        # plt.imshow(img)
+        cv2.drawChessboardCorners(img, (nx, ny), corners, ret)
+        cv2.imwrite("./output_images/" + filename, img)
 
   # print("objpoints={}".format(np.array(objpoints)))
   calib_image = mpimg.imread('./camera_cal/calibration1.jpg')
   ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(np.array(objpoints), np.array(imgpoints), img_shape, None, None)
   undistorted = cv2.undistort(calib_image, mtx, dist, None, mtx)
-  # display_images(calib_image, undistorted, 'Undistorted Image')
+  cv2.imwrite("./output_images/undistort_output.png", undistorted)
+  return mtx, dist
+
+
+def main():
+  mtx, dist = perform_camera_calibration()
 
   test_image = mpimg.imread('./test_images/test6.jpg')
   hls_binary = hls_select(test_image, 0, s_thresh=(0, 1))
@@ -433,7 +439,7 @@ def main():
 
   # Define the codec and create VideoWriter object
   fourcc = cv2.VideoWriter_fourcc(*'XVID')
-  out = cv2.VideoWriter('output.mp4', fourcc, 25.0, (1280, 720))
+  out = cv2.VideoWriter('output_project_video.mp4', fourcc, 25.0, (1280, 720))
 
   line_state = Line()
 
